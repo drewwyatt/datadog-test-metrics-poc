@@ -1,0 +1,8 @@
+{
+  "name": "datadog-test-metrics-poc",
+  "version": "0.1.0",
+  "description": "Sandbox for collecting test metrics in datadog",
+  "author": "Drew Wyatt <drew.j.wyatt@gmail.com>",
+  "license": "MIT",
+  "private": true
+}
