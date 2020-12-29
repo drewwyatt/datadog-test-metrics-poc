@@ -18,6 +18,15 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: yarn
-      - run: yarn build
-      - run: yarn test
+      - name: Install dependencies
+        run: yarn
+      - name: Build reporter
+        run: yarn build
+      - id: run-tests
+        name: Run tests
+        run: yarn test
+      - name: do something with the output...
+        run: |
+          echo "The total number of tests was ${{ steps.run-tests.outputs.numTotalTests }}"
+          echo "The number of failed tests was ${{ steps.run-tests.outputs.numFailedTests }}"
+          echo "Tests were started at ${{ steps.run-tests.outputs.startTime }}"
