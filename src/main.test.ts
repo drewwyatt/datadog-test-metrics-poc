@@ -12,4 +12,8 @@ describe('main', () => {
   it('has a third test that should always pass', () => {
     expect(null).toBeFalsy()
   })
+
+  it('has a test that fails sometimes', () => {
+    expect(Math.floor(Math.random() * 10) % 2).toEqual(0)
+  })
 })

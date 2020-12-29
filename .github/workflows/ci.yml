@@ -1,6 +1,3 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: CI
 
 on:
@@ -26,6 +23,7 @@ jobs:
         id: run-tests
         run: yarn test
       - name: Report Metrics
+        if: always()
         uses: masci/datadog@v1
         with:
           api-key: ${{ secrets.DATADOG_API_KEY }}
@@ -49,6 +47,20 @@ jobs:
             - type: "count" # is this right?
               name: "some_project_or_repo.tests.start_time"
               value: ${{steps.run-tests.outputs.startTime}}
+              host: ${{ github.repository_owner }}
+              tags:
+                - "project:${{ github.repository }}"
+                - "branch:${{ github.head_ref }}"
+                - "sha:${{github.sha}}"
+      - name: Report Failures
+        if: failure()
+        uses: masci/datadog@v1
+        with:
+          api-key: ${{ secrets.DATADOG_API_KEY }}
+          events: |
+            - title: "Failed Running Tests"
+              text: "Something bad happened"
+              alert_type: "error"
               host: ${{ github.repository_owner }}
               tags:
                 - "project:${{ github.repository }}"
