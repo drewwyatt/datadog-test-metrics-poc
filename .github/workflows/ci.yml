@@ -22,11 +22,35 @@ jobs:
         run: yarn
       - name: Build reporter
         run: yarn build
-      - id: run-tests
-        name: Run tests
+      - name: Run tests
+        id: run-tests
         run: yarn test
-      - name: do something with the output...
-        run: |
-          echo "The total number of tests was ${{ steps.run-tests.outputs.numTotalTests }}"
-          echo "The number of failed tests was ${{ steps.run-tests.outputs.numFailedTests }}"
-          echo "Tests were started at ${{ steps.run-tests.outputs.startTime }}"
+      - name: Report Metrics
+        uses: masci/datadog@v1
+        with:
+          api-key: ${{ secrets.DATADOG_API_KEY }}
+          metrics: |
+            - type: "count"
+              name: "some_project_or_repo.tests.count"
+              value: ${{steps.run-tests.outputs.numTotalTests}}
+              host: ${{ github.repository_owner }}
+              tags:
+                - "project:${{ github.repository }}"
+                - "branch:${{ github.head_ref }}"
+                - "sha:${{github.sha}}"
+            - type: "count"
+              name: "some_project_or_repo.tests.failed_count"
+              value: ${{steps.run-tests.outputs.numFailedTests}}
+              host: ${{ github.repository_owner }}
+              tags:
+                - "project:${{ github.repository }}"
+                - "branch:${{ github.head_ref }}"
+                - "sha:${{github.sha}}"
+            - type: "count" # is this right?
+              name: "some_project_or_repo.tests.start_time"
+              value: ${{steps.run-tests.outputs.startTime}}
+              host: ${{ github.repository_owner }}
+              tags:
+                - "project:${{ github.repository }}"
+                - "branch:${{ github.head_ref }}"
+                - "sha:${{github.sha}}"
